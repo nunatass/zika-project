@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { FullscreenProvider } from "./fullscreen-provider"
+import { ServiceWorkerRegistrar } from "./sw-registrar"
 
 export const metadata: Metadata = {
 	title: "AliExpress - Orders",
 	description: "Order tracking",
 	manifest: "/manifest.json",
 	icons: {
-		icon: "/favicon.webp",
-		apple: "/favicon.webp",
+		icon: "/favicon.png",
+		apple: "/icon-192.png",
 	},
 	appleWebApp: {
 		capable: true,
@@ -22,6 +23,7 @@ export const viewport: Viewport = {
 	initialScale: 1,
 	maximumScale: 1,
 	userScalable: false,
+	themeColor: "#ffffff",
 }
 
 export default function RootLayout({
@@ -32,6 +34,7 @@ export default function RootLayout({
 	return (
 		<html lang="pt">
 			<body className="bg-white w-full overflow-hidden" style={{ height: "100dvh" }}>
+				<ServiceWorkerRegistrar />
 				<FullscreenProvider />
 				{children}
 			</body>
