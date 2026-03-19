@@ -1,38 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
-
-interface TrackingEvent {
-	title: string
-	description: string
-	date: string
-}
-
-interface OrderData {
-	storeName: string
-	productFullName: string
-	productVariant: string
-	quantity: number
-	deliveryEstimate: string
-	deliveryDate: string
-	trackingNumber: string
-	shippingMethod: string
-	address: string
-	phone: string
-	productImage: string
-	trackingEvents: TrackingEvent[]
-}
+import { useState } from "react"
+import { useOrderData } from "@/lib/use-order-data"
 
 export default function TrackingPage() {
 	const [expanded, setExpanded] = useState(false)
-	const [data, setData] = useState<OrderData | null>(null)
-
-	useEffect(() => {
-		fetch("/api/data")
-			.then((r) => r.json())
-			.then(setData)
-	}, [])
+	const { data } = useOrderData()
 
 	if (!data) {
 		return (

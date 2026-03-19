@@ -1,64 +1,33 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
+import { type OrderData, type TrackingEvent, useOrderData } from "@/lib/use-order-data"
 
 const tabs = ["Ver tudo", "Para pagar", "Para enviar", "Enviado", "Config"]
 
-interface TrackingEvent {
-	title: string
-	description: string
-	date: string
-}
-
-interface OrderData {
-	storeName: string
-	productName: string
-	productFullName: string
-	productVariant: string
-	productPrice: string
-	quantity: number
-	totalPrice: string
-	orderDate: string
-	deliveryEstimate: string
-	deliveryDate: string
-	trackingNumber: string
-	shippingMethod: string
-	address: string
-	phone: string
-	productImage: string
-	trackingEvents: TrackingEvent[]
-}
-
 export default function Home() {
 	const [activeTab, setActiveTab] = useState(3)
-	const [data, setData] = useState<OrderData | null>(null)
+	const { data, save } = useOrderData()
 	const [saving, setSaving] = useState(false)
 	const [saved, setSaved] = useState(false)
-	const [uploading, setUploading] = useState(false)
 	const fileRef = useRef<HTMLInputElement>(null)
-
-	useEffect(() => {
-		fetch("/api/data")
-			.then((r) => r.json())
-			.then(setData)
-	}, [])
 
 	const update = (key: keyof OrderData, value: string | number) => {
 		if (!data) return
-		setData({ ...data, [key]: value })
+		save({ ...data, [key]: value })
 	}
 
 	const updateEvent = (index: number, key: keyof TrackingEvent, value: string) => {
 		if (!data) return
 		const events = [...data.trackingEvents]
 		events[index] = { ...events[index], [key]: value }
-		setData({ ...data, trackingEvents: events })
+		save({ ...data, trackingEvents: events })
 	}
 
 	const addEvent = () => {
 		if (!data) return
-		setData({
+		save({
 			...data,
 			trackingEvents: [...data.trackingEvents, { title: "", description: "", date: "" }],
 		})
@@ -66,35 +35,30 @@ export default function Home() {
 
 	const removeEvent = (index: number) => {
 		if (!data) return
-		setData({
+		save({
 			...data,
 			trackingEvents: data.trackingEvents.filter((_, i) => i !== index),
 		})
 	}
 
-	const save = async () => {
+	const handleSave = () => {
 		if (!data) return
 		setSaving(true)
-		await fetch("/api/data", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data),
-		})
+		save(data)
 		setSaving(false)
 		setSaved(true)
 		setTimeout(() => setSaved(false), 2000)
 	}
 
-	const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+	const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0]
 		if (!file || !data) return
-		setUploading(true)
-		const form = new FormData()
-		form.append("file", file)
-		const res = await fetch("/api/upload", { method: "POST", body: form })
-		const { url } = await res.json()
-		setData({ ...data, productImage: url })
-		setUploading(false)
+		const reader = new FileReader()
+		reader.onload = () => {
+			const base64 = reader.result as string
+			save({ ...data, productImage: base64 })
+		}
+		reader.readAsDataURL(file)
 	}
 
 	if (!data) {
@@ -132,13 +96,12 @@ export default function Home() {
 					data={data}
 					saving={saving}
 					saved={saved}
-					uploading={uploading}
 					fileRef={fileRef}
 					onUpdate={update}
 					onUpdateEvent={updateEvent}
 					onAddEvent={addEvent}
 					onRemoveEvent={removeEvent}
-					onSave={save}
+					onSave={handleSave}
 					onUploadImage={uploadImage}
 				/>
 			) : (
@@ -236,7 +199,6 @@ function SettingsTab({
 	data,
 	saving,
 	saved,
-	uploading,
 	fileRef,
 	onUpdate,
 	onUpdateEvent,
@@ -248,7 +210,6 @@ function SettingsTab({
 	data: OrderData
 	saving: boolean
 	saved: boolean
-	uploading: boolean
 	fileRef: React.RefObject<HTMLInputElement | null>
 	onUpdate: (key: keyof OrderData, value: string | number) => void
 	onUpdateEvent: (index: number, key: keyof TrackingEvent, value: string) => void
@@ -289,7 +250,7 @@ function SettingsTab({
 							onClick={() => fileRef.current?.click()}
 							className="px-4 py-2 bg-gray-100 rounded-lg text-[13px] font-medium text-black"
 						>
-							{uploading ? "Enviando..." : "Trocar imagem"}
+							Trocar imagem
 						</button>
 						<input
 							ref={fileRef}
