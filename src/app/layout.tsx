@@ -6,6 +6,10 @@ export const metadata: Metadata = {
 	title: "AliExpress - Orders",
 	description: "Order tracking",
 	manifest: "/manifest.json",
+	icons: {
+		icon: "/favicon.webp",
+		apple: "/favicon.webp",
+	},
 	appleWebApp: {
 		capable: true,
 		statusBarStyle: "default",
