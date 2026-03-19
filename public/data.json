@@ -1,0 +1,44 @@
+{
+	"storeName": "ShenZhen Menglin Electronics Store",
+	"productName": "Repetidor wi-fi sem fio, amplificador de re...",
+	"productFullName": "Wireless WIFI Repeater Wi Fi Booster Amplifier Network Expander Router Power Antenna for Rou...",
+	"productVariant": "EU",
+	"productPrice": "5",
+	"quantity": 12,
+	"totalPrice": "100",
+	"orderDate": "2 mar, 2026",
+	"deliveryEstimate": "Mar. 16 - Apr. 04",
+	"deliveryDate": "4 abr, 2026",
+	"trackingNumber": "EC237054577BE",
+	"shippingMethod": "CAINIAO_STANDARD",
+	"address": "Palmarejo,Praia,Santiago,Cape Verde 7600",
+	"phone": "K********************************a +238 98**533",
+	"productImage": "/product-1773952875967.png",
+	"trackingEvents": [
+		{
+			"title": "Desembaraço aduaneiro iniciado",
+			"description": "Início do desembaraço aduaneiro de importação",
+			"date": "Sáb. | Mar. 07 08:37"
+		},
+		{
+			"title": "Em trânsito",
+			"description": "Seu pacote chegou ao aeroporto local",
+			"date": "Sáb. | Mar. 07 06:26"
+		},
+		{
+			"title": "Em trânsito",
+			"description": "Seu pacote saiu do centro de distribuição",
+			"date": "Sex. | Mar. 06 22:15"
+		},
+		{
+			"title": "Em trânsito",
+			"description": "Seu pacote chegou ao país de destino",
+			"date": "Sex. | Mar. 06 18:42"
+		},
+		{
+			"title": "Em trânsito",
+			"description": "Seu pacote saiu do país de origem",
+			"date": "Qui. | Mar. 05 14:30"
+		}
+	]
+}
