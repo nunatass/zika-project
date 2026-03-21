@@ -15,6 +15,11 @@ export interface ProductItem {
 	productPrice: string
 	quantity: number
 	productImage: string
+	trackingNumber: string
+	shippingMethod: string
+	deliveryEstimate: string
+	deliveryDate: string
+	trackingEvents: TrackingEvent[]
 }
 
 export interface OrderData {
@@ -22,13 +27,8 @@ export interface OrderData {
 	items: ProductItem[]
 	totalPrice: string
 	orderDate: string
-	deliveryEstimate: string
-	deliveryDate: string
-	trackingNumber: string
-	shippingMethod: string
 	address: string
 	phone: string
-	trackingEvents: TrackingEvent[]
 }
 
 const STORAGE_KEY = "aliexpress-order-data"
@@ -43,6 +43,17 @@ const defaultData: OrderData = {
 			productPrice: "5.65",
 			quantity: 12,
 			productImage: "/product.jpg",
+			trackingNumber: "EC237054577BE",
+			shippingMethod: "CAINIAO_STANDARD",
+			deliveryEstimate: "Mar. 16 - Apr. 04",
+			deliveryDate: "4 abr, 2026",
+			trackingEvents: [
+				{ title: "Desembaraço aduaneiro iniciado", description: "Início do desembaraço aduaneiro de importação", date: "Sáb. | Mar. 07 08:37" },
+				{ title: "Em trânsito", description: "Seu pacote chegou ao aeroporto local", date: "Sáb. | Mar. 07 06:26" },
+				{ title: "Em trânsito", description: "Seu pacote saiu do centro de distribuição", date: "Sex. | Mar. 06 22:15" },
+				{ title: "Em trânsito", description: "Seu pacote chegou ao país de destino", date: "Sex. | Mar. 06 18:42" },
+				{ title: "Em trânsito", description: "Seu pacote saiu do país de origem", date: "Qui. | Mar. 05 14:30" },
+			],
 		},
 		{
 			productName: "2TB OTG USB Flash Drive USB 3.0 Type C...",
@@ -51,43 +62,20 @@ const defaultData: OrderData = {
 			productPrice: "3.20",
 			quantity: 5,
 			productImage: "/pen.png",
+			trackingNumber: "LP237098412CN",
+			shippingMethod: "CAINIAO_STANDARD",
+			deliveryEstimate: "Mar. 20 - Apr. 10",
+			deliveryDate: "10 abr, 2026",
+			trackingEvents: [
+				{ title: "Em trânsito", description: "Seu pacote saiu do país de origem", date: "Sáb. | Mar. 08 10:15" },
+				{ title: "Pedido enviado", description: "O vendedor enviou seu pedido", date: "Sex. | Mar. 07 16:30" },
+			],
 		},
 	],
 	totalPrice: "83.80",
 	orderDate: "2 mar, 2026",
-	deliveryEstimate: "Mar. 16 - Apr. 04",
-	deliveryDate: "4 abr, 2026",
-	trackingNumber: "EC237054577BE",
-	shippingMethod: "CAINIAO_STANDARD",
 	address: "Palmarejo,Praia,Santiago,Cape Verde 7600",
 	phone: "K********************************a +238 98**533",
-	trackingEvents: [
-		{
-			title: "Desembaraço aduaneiro iniciado",
-			description: "Início do desembaraço aduaneiro de importação",
-			date: "Sáb. | Mar. 07 08:37",
-		},
-		{
-			title: "Em trânsito",
-			description: "Seu pacote chegou ao aeroporto local",
-			date: "Sáb. | Mar. 07 06:26",
-		},
-		{
-			title: "Em trânsito",
-			description: "Seu pacote saiu do centro de distribuição",
-			date: "Sex. | Mar. 06 22:15",
-		},
-		{
-			title: "Em trânsito",
-			description: "Seu pacote chegou ao país de destino",
-			date: "Sex. | Mar. 06 18:42",
-		},
-		{
-			title: "Em trânsito",
-			description: "Seu pacote saiu do país de origem",
-			date: "Qui. | Mar. 05 14:30",
-		},
-	],
 }
 
 export function useOrderData() {
@@ -98,7 +86,7 @@ export function useOrderData() {
 			const stored = localStorage.getItem(STORAGE_KEY)
 			if (stored) {
 				const parsed = JSON.parse(stored)
-				if (Array.isArray(parsed.items) && parsed.items.length > 0 && parsed.trackingEvents) {
+				if (Array.isArray(parsed.items) && parsed.items.length > 0 && parsed.items[0].trackingEvents) {
 					setData(parsed)
 					return
 				}
@@ -106,7 +94,6 @@ export function useOrderData() {
 		} catch {
 			// ignore
 		}
-		// Any failure or old format: reset to defaults
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData))
 		setData(defaultData)
 	}, [])

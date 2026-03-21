@@ -18,11 +18,11 @@ export default function SettingsPage() {
 		)
 	}
 
-	const update = (key: keyof OrderData, value: string | number) => {
+	const update = (key: keyof OrderData, value: string) => {
 		save({ ...data, [key]: value })
 	}
 
-	const updateItem = (index: number, key: keyof ProductItem, value: string | number) => {
+	const updateItem = (index: number, key: keyof ProductItem, value: string | number | TrackingEvent[]) => {
 		const items = [...data.items]
 		items[index] = { ...items[index], [key]: value }
 		save({ ...data, items })
@@ -39,6 +39,11 @@ export default function SettingsPage() {
 					productPrice: "0",
 					quantity: 1,
 					productImage: "/product.jpg",
+					trackingNumber: "",
+					shippingMethod: "CAINIAO_STANDARD",
+					deliveryEstimate: "",
+					deliveryDate: "",
+					trackingEvents: [],
 				},
 				...data.items,
 			],
@@ -53,30 +58,24 @@ export default function SettingsPage() {
 		const file = e.target.files?.[0]
 		if (!file) return
 		const reader = new FileReader()
-		reader.onload = () => {
-			updateItem(index, "productImage", reader.result as string)
-		}
+		reader.onload = () => updateItem(index, "productImage", reader.result as string)
 		reader.readAsDataURL(file)
 	}
 
-	const updateEvent = (index: number, key: keyof TrackingEvent, value: string) => {
-		const events = [...data.trackingEvents]
-		events[index] = { ...events[index], [key]: value }
-		save({ ...data, trackingEvents: events })
+	const updateEvent = (itemIndex: number, eventIndex: number, key: keyof TrackingEvent, value: string) => {
+		const events = [...data.items[itemIndex].trackingEvents]
+		events[eventIndex] = { ...events[eventIndex], [key]: value }
+		updateItem(itemIndex, "trackingEvents", events)
 	}
 
-	const addEvent = () => {
-		save({
-			...data,
-			trackingEvents: [...data.trackingEvents, { title: "", description: "", date: "" }],
-		})
+	const addEvent = (itemIndex: number) => {
+		const events = [...data.items[itemIndex].trackingEvents, { title: "", description: "", date: "" }]
+		updateItem(itemIndex, "trackingEvents", events)
 	}
 
-	const removeEvent = (index: number) => {
-		save({
-			...data,
-			trackingEvents: data.trackingEvents.filter((_, i) => i !== index),
-		})
+	const removeEvent = (itemIndex: number, eventIndex: number) => {
+		const events = data.items[itemIndex].trackingEvents.filter((_, i) => i !== eventIndex)
+		updateItem(itemIndex, "trackingEvents", events)
 	}
 
 	const handleSave = () => {
@@ -103,9 +102,7 @@ export default function SettingsPage() {
 					type="button"
 					onClick={handleSave}
 					disabled={saving}
-					className={`px-5 py-2 rounded-full text-[13px] font-semibold text-white ${
-						saved ? "bg-green-500" : "bg-black"
-					}`}
+					className={`px-5 py-2 rounded-full text-[13px] font-semibold text-white ${saved ? "bg-green-500" : "bg-black"}`}
 				>
 					{saving ? "Salvando..." : saved ? "Salvo!" : "Salvar"}
 				</button>
@@ -113,9 +110,13 @@ export default function SettingsPage() {
 
 			{/* Form */}
 			<div className="flex-1 overflow-y-auto">
-				{/* Store Info */}
-				<Section title="Loja">
+				{/* General */}
+				<Section title="Geral">
 					<Field label="Nome da loja" value={data.storeName} onChange={(v) => update("storeName", v)} />
+					<Field label="Preço total (USD)" value={data.totalPrice} onChange={(v) => update("totalPrice", v)} />
+					<Field label="Data do pedido" value={data.orderDate} onChange={(v) => update("orderDate", v)} />
+					<Field label="Endereço" value={data.address} onChange={(v) => update("address", v)} />
+					<Field label="Telefone" value={data.phone} onChange={(v) => update("phone", v)} />
 				</Section>
 
 				{/* Items */}
@@ -128,9 +129,9 @@ export default function SettingsPage() {
 					</div>
 
 					{data.items.map((item, i) => (
-						<div key={`item-${i.toString()}`} className="mb-4 p-3 bg-gray-50 rounded-xl">
+						<div key={`item-${i.toString()}`} className="mb-5 p-3 bg-gray-50 rounded-xl">
 							<div className="flex items-center justify-between mb-3">
-								<span className="text-[12px] font-bold text-gray-500">Item {i + 1}</span>
+								<span className="text-[13px] font-bold text-black">Item {i + 1}</span>
 								{data.items.length > 1 && (
 									<button type="button" onClick={() => removeItem(i)} className="text-[12px] text-red-500 font-medium">
 										Remover
@@ -138,7 +139,7 @@ export default function SettingsPage() {
 								)}
 							</div>
 
-							{/* Item Image */}
+							{/* Image */}
 							<div className="flex items-center gap-3 mb-3">
 								<img src={item.productImage} alt="Product" className="w-14 h-14 rounded-lg object-cover bg-white" />
 								<button
@@ -157,68 +158,51 @@ export default function SettingsPage() {
 								/>
 							</div>
 
+							{/* Product fields */}
 							<Field label="Nome curto" value={item.productName} onChange={(v) => updateItem(i, "productName", v)} />
 							<Field label="Nome completo" value={item.productFullName} onChange={(v) => updateItem(i, "productFullName", v)} />
 							<Field label="Variante" value={item.productVariant} onChange={(v) => updateItem(i, "productVariant", v)} />
 							<Field label="Preço (USD)" value={item.productPrice} onChange={(v) => updateItem(i, "productPrice", v)} />
-							<Field
-								label="Quantidade"
-								value={String(item.quantity)}
-								onChange={(v) => updateItem(i, "quantity", Number.parseInt(v) || 0)}
-								type="number"
-							/>
-						</div>
-					))}
-				</div>
+							<Field label="Quantidade" value={String(item.quantity)} onChange={(v) => updateItem(i, "quantity", Number.parseInt(v) || 0)} type="number" />
 
-				{/* Order Info */}
-				<Section title="Pedido">
-					<Field label="Preço total (USD)" value={data.totalPrice} onChange={(v) => update("totalPrice", v)} />
-					<Field label="Data do pedido" value={data.orderDate} onChange={(v) => update("orderDate", v)} />
-					<Field label="Estimativa de entrega" value={data.deliveryEstimate} onChange={(v) => update("deliveryEstimate", v)} />
-					<Field label="Data prevista" value={data.deliveryDate} onChange={(v) => update("deliveryDate", v)} />
-				</Section>
-
-				{/* Shipping Info */}
-				<Section title="Envio">
-					<Field label="Método de envio" value={data.shippingMethod} onChange={(v) => update("shippingMethod", v)} />
-					<Field label="Número de rastreamento" value={data.trackingNumber} onChange={(v) => update("trackingNumber", v)} />
-					<Field label="Endereço" value={data.address} onChange={(v) => update("address", v)} />
-					<Field label="Telefone" value={data.phone} onChange={(v) => update("phone", v)} />
-				</Section>
-
-				{/* Tracking Events */}
-				<div className="bg-white mt-2 px-4 py-4">
-					<div className="flex items-center justify-between mb-3">
-						<label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wide">
-							Eventos de rastreamento
-						</label>
-						<button type="button" onClick={addEvent} className="text-[13px] font-semibold text-blue-600">
-							+ Adicionar
-						</button>
-					</div>
-					{data.trackingEvents.map((event, i) => (
-						<div key={`evt-${i.toString()}`} className="mb-4 p-3 bg-gray-50 rounded-xl">
-							<div className="flex items-center justify-between mb-2">
-								<span className="text-[12px] font-bold text-gray-500">Evento {i + 1}</span>
-								<button type="button" onClick={() => removeEvent(i)} className="text-[12px] text-red-500 font-medium">
-									Remover
-								</button>
+							{/* Tracking fields */}
+							<div className="mt-3 pt-3 border-t border-gray-200">
+								<label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2 block">Rastreamento</label>
+								<Field label="Número de rastreamento" value={item.trackingNumber} onChange={(v) => updateItem(i, "trackingNumber", v)} />
+								<Field label="Método de envio" value={item.shippingMethod} onChange={(v) => updateItem(i, "shippingMethod", v)} />
+								<Field label="Estimativa de entrega" value={item.deliveryEstimate} onChange={(v) => updateItem(i, "deliveryEstimate", v)} />
+								<Field label="Data prevista" value={item.deliveryDate} onChange={(v) => updateItem(i, "deliveryDate", v)} />
 							</div>
-							<Field label="Título" value={event.title} onChange={(v) => updateEvent(i, "title", v)} />
-							<Field label="Descrição" value={event.description} onChange={(v) => updateEvent(i, "description", v)} />
-							<Field label="Data" value={event.date} onChange={(v) => updateEvent(i, "date", v)} />
+
+							{/* Tracking Events */}
+							<div className="mt-3 pt-3 border-t border-gray-200">
+								<div className="flex items-center justify-between mb-2">
+									<label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Eventos</label>
+									<button type="button" onClick={() => addEvent(i)} className="text-[12px] font-semibold text-blue-600">
+										+ Evento
+									</button>
+								</div>
+								{item.trackingEvents.map((event, ei) => (
+									<div key={`evt-${i}-${ei.toString()}`} className="mb-3 p-2.5 bg-white rounded-lg">
+										<div className="flex items-center justify-between mb-1.5">
+											<span className="text-[11px] font-bold text-gray-400">Evento {ei + 1}</span>
+											<button type="button" onClick={() => removeEvent(i, ei)} className="text-[11px] text-red-500 font-medium">
+												Remover
+											</button>
+										</div>
+										<Field label="Título" value={event.title} onChange={(v) => updateEvent(i, ei, "title", v)} />
+										<Field label="Descrição" value={event.description} onChange={(v) => updateEvent(i, ei, "description", v)} />
+										<Field label="Data" value={event.date} onChange={(v) => updateEvent(i, ei, "date", v)} />
+									</div>
+								))}
+							</div>
 						</div>
 					))}
 				</div>
 
 				{/* Reset */}
 				<div className="px-4 py-4">
-					<button
-						type="button"
-						onClick={reset}
-						className="w-full py-3 border border-red-300 rounded-xl text-[14px] font-medium text-red-500"
-					>
+					<button type="button" onClick={reset} className="w-full py-3 border border-red-300 rounded-xl text-[14px] font-medium text-red-500">
 						Restaurar padrão
 					</button>
 				</div>
@@ -238,17 +222,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 	)
 }
 
-function Field({
-	label,
-	value,
-	onChange,
-	type = "text",
-}: {
-	label: string
-	value: string
-	onChange: (v: string) => void
-	type?: string
-}) {
+function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
 	return (
 		<div className="mb-3">
 			<label className="text-[13px] text-gray-500 block mb-1">{label}</label>

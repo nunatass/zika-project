@@ -2,9 +2,12 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { useParams } from "next/navigation"
 import { useOrderData } from "@/lib/use-order-data"
 
 export default function TrackingPage() {
+	const params = useParams()
+	const itemIndex = Number(params.id)
 	const [expanded, setExpanded] = useState(false)
 	const { data } = useOrderData()
 
@@ -16,7 +19,18 @@ export default function TrackingPage() {
 		)
 	}
 
-	const visibleEvents = expanded ? data.trackingEvents : data.trackingEvents.slice(0, 2)
+	const item = data.items[itemIndex]
+	if (!item) {
+		return (
+			<div className="flex flex-col items-center justify-center bg-white gap-4" style={{ height: "100dvh" }}>
+				<p className="text-[15px] text-gray-500">Item não encontrado</p>
+				<Link href="/" className="text-[14px] text-blue-600 font-medium">Voltar</Link>
+			</div>
+		)
+	}
+
+	const visibleEvents = expanded ? item.trackingEvents : item.trackingEvents.slice(0, 2)
+
 	return (
 		<div className="bg-white flex flex-col overflow-y-auto" style={{ height: "100dvh" }}>
 			{/* Header */}
@@ -30,9 +44,9 @@ export default function TrackingPage() {
 			</div>
 
 			{/* Delivery Estimate Banner */}
-			<div className="mx-0 bg-gradient-to-r from-green-50 to-green-100/50 px-4 py-4">
+			<div className="bg-gradient-to-r from-green-50 to-green-100/50 px-4 py-4">
 				<div className="flex items-center gap-2">
-					<h2 className="text-[20px] font-bold text-black">Entrega:{data.deliveryEstimate}</h2>
+					<h2 className="text-[20px] font-bold text-black">Entrega:{item.deliveryEstimate}</h2>
 					<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
 						<path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
 					</svg>
@@ -44,14 +58,12 @@ export default function TrackingPage() {
 
 			{/* Shipping Info */}
 			<div className="px-4 pt-4 pb-2">
-				<p className="text-[13px] text-gray-400 mb-0.5">{data.shippingMethod}</p>
+				<p className="text-[13px] text-gray-400 mb-0.5">{item.shippingMethod}</p>
 				<div className="flex items-center justify-between">
 					<p className="text-[14px] text-black">
-						Número de rastreamento: <span className="font-bold">{data.trackingNumber}</span>
+						Número de rastreamento: <span className="font-bold">{item.trackingNumber}</span>
 					</p>
-					<button type="button" className="text-[14px] text-blue-600 font-medium">
-						Copiar
-					</button>
+					<button type="button" className="text-[14px] text-blue-600 font-medium">Copiar</button>
 				</div>
 			</div>
 
@@ -73,7 +85,7 @@ export default function TrackingPage() {
 						</div>
 					))}
 
-					{!expanded && data.trackingEvents.length > 2 && (
+					{!expanded && item.trackingEvents.length > 2 && (
 						<button type="button" onClick={() => setExpanded(true)} className="flex items-center gap-1 ml-6 text-[14px] text-gray-500">
 							<div className="flex flex-col items-center absolute left-0">
 								<div className="w-3 h-3 rounded-full bg-gray-300 flex-shrink-0" />
@@ -120,19 +132,17 @@ export default function TrackingPage() {
 
 			<div className="h-2 bg-gray-100" />
 
-			{/* Packed Items */}
+			{/* Packed Item */}
 			<div className="px-4 py-4">
 				<h3 className="text-[17px] font-bold text-black mb-4">Itens embalados</h3>
-				{data.items.map((item, i) => (
-					<div key={`packed-${i.toString()}`} className="flex gap-3 items-center mb-4">
-						<img src={item.productImage} alt="Product" className="w-[72px] h-[72px] rounded-lg flex-shrink-0 object-cover bg-gray-50" />
-						<div className="flex-1 min-w-0">
-							<p className="text-[13px] text-gray-700 leading-snug">{item.productFullName}</p>
-							<p className="text-[12px] text-gray-400 mt-1">Color:{item.productVariant}</p>
-						</div>
-						<span className="text-[14px] text-gray-400 self-start font-medium">x{item.quantity}</span>
+				<div className="flex gap-3 items-center">
+					<img src={item.productImage} alt="Product" className="w-[72px] h-[72px] rounded-lg flex-shrink-0 object-cover bg-gray-50" />
+					<div className="flex-1 min-w-0">
+						<p className="text-[13px] text-gray-700 leading-snug">{item.productFullName}</p>
+						<p className="text-[12px] text-gray-400 mt-1">Color:{item.productVariant}</p>
 					</div>
-				))}
+					<span className="text-[14px] text-gray-400 self-start font-medium">x{item.quantity}</span>
+				</div>
 			</div>
 
 			<div className="h-2 bg-gray-100" />
