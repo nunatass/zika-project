@@ -17,7 +17,6 @@ export default function TrackingPage() {
 	}
 
 	const visibleEvents = expanded ? data.trackingEvents : data.trackingEvents.slice(0, 2)
-
 	return (
 		<div className="bg-white flex flex-col overflow-y-auto" style={{ height: "100dvh" }}>
 			{/* Header */}
@@ -38,7 +37,6 @@ export default function TrackingPage() {
 						<path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
 					</svg>
 				</div>
-				{/* Progress bar */}
 				<div className="mt-3 h-1 bg-green-200 rounded-full overflow-hidden">
 					<div className="h-full bg-green-500 rounded-full" style={{ width: "65%" }} />
 				</div>
@@ -62,43 +60,21 @@ export default function TrackingPage() {
 				<div className="relative">
 					{visibleEvents.map((event, index) => (
 						<div key={`event-${index.toString()}`} className="flex gap-3 relative">
-							{/* Timeline line and dot */}
 							<div className="flex flex-col items-center">
-								<div
-									className={`w-3 h-3 rounded-full flex-shrink-0 mt-1 ${
-										index === 0 ? "bg-black" : "bg-gray-300"
-									}`}
-								/>
-								{index < visibleEvents.length - 1 && (
-									<div className="w-px flex-1 bg-gray-200 my-1" />
-								)}
-								{!expanded && index === visibleEvents.length - 1 && (
-									<div className="w-px h-4 bg-gray-200 my-1" />
-								)}
+								<div className={`w-3 h-3 rounded-full flex-shrink-0 mt-1 ${index === 0 ? "bg-black" : "bg-gray-300"}`} />
+								{index < visibleEvents.length - 1 && <div className="w-px flex-1 bg-gray-200 my-1" />}
+								{!expanded && index === visibleEvents.length - 1 && <div className="w-px h-4 bg-gray-200 my-1" />}
 							</div>
-
-							{/* Content */}
 							<div className="pb-5 flex-1">
-								<p className={`text-[15px] leading-snug ${index === 0 ? "font-bold text-black" : "text-gray-400"}`}>
-									{event.title}
-								</p>
-								<p className={`text-[13px] mt-0.5 leading-snug ${index === 0 ? "text-gray-600" : "text-gray-400"}`}>
-									{event.description}
-								</p>
-								<p className={`text-[13px] mt-1 ${index === 0 ? "text-gray-500" : "text-gray-400"}`}>
-									{event.date}
-								</p>
+								<p className={`text-[15px] leading-snug ${index === 0 ? "font-bold text-black" : "text-gray-400"}`}>{event.title}</p>
+								<p className={`text-[13px] mt-0.5 leading-snug ${index === 0 ? "text-gray-600" : "text-gray-400"}`}>{event.description}</p>
+								<p className={`text-[13px] mt-1 ${index === 0 ? "text-gray-500" : "text-gray-400"}`}>{event.date}</p>
 							</div>
 						</div>
 					))}
 
-					{/* Ver mais button */}
 					{!expanded && data.trackingEvents.length > 2 && (
-						<button
-							type="button"
-							onClick={() => setExpanded(true)}
-							className="flex items-center gap-1 ml-6 text-[14px] text-gray-500"
-						>
+						<button type="button" onClick={() => setExpanded(true)} className="flex items-center gap-1 ml-6 text-[14px] text-gray-500">
 							<div className="flex flex-col items-center absolute left-0">
 								<div className="w-3 h-3 rounded-full bg-gray-300 flex-shrink-0" />
 							</div>
@@ -133,16 +109,12 @@ export default function TrackingPage() {
 				<div className="flex-1 bg-amber-50 rounded-xl p-4">
 					<p className="text-[14px] font-bold text-black mb-0.5">Ganhe moedas agora</p>
 					<p className="text-[12px] text-gray-500 mb-3">Visite hoje para economizar</p>
-					<button type="button" className="bg-black text-white text-[12px] font-medium px-4 py-1.5 rounded-full">
-						Coletar
-					</button>
+					<button type="button" className="bg-black text-white text-[12px] font-medium px-4 py-1.5 rounded-full">Coletar</button>
 				</div>
 				<div className="flex-1 bg-blue-50 rounded-xl p-4">
 					<p className="text-[14px] font-bold text-black mb-0.5">Cashback</p>
 					<p className="text-[12px] text-gray-500 mb-3">Até -10%</p>
-					<button type="button" className="bg-black text-white text-[12px] font-medium px-4 py-1.5 rounded-full">
-						Comprar agora
-					</button>
+					<button type="button" className="bg-black text-white text-[12px] font-medium px-4 py-1.5 rounded-full">Comprar agora</button>
 				</div>
 			</div>
 
@@ -151,22 +123,16 @@ export default function TrackingPage() {
 			{/* Packed Items */}
 			<div className="px-4 py-4">
 				<h3 className="text-[17px] font-bold text-black mb-4">Itens embalados</h3>
-				<div className="flex gap-3 items-center">
-					<img
-						src={data.productImage}
-						alt="Product"
-						className="w-[72px] h-[72px] rounded-lg flex-shrink-0 object-cover"
-					/>
-
-					<div className="flex-1 min-w-0">
-						<p className="text-[13px] text-gray-700 leading-snug">
-							{data.productFullName}
-						</p>
-						<p className="text-[12px] text-gray-400 mt-1">Color:{data.productVariant}</p>
+				{data.items.map((item, i) => (
+					<div key={`packed-${i.toString()}`} className="flex gap-3 items-center mb-4">
+						<img src={item.productImage} alt="Product" className="w-[72px] h-[72px] rounded-lg flex-shrink-0 object-cover bg-gray-50" />
+						<div className="flex-1 min-w-0">
+							<p className="text-[13px] text-gray-700 leading-snug">{item.productFullName}</p>
+							<p className="text-[12px] text-gray-400 mt-1">Color:{item.productVariant}</p>
+						</div>
+						<span className="text-[14px] text-gray-400 self-start font-medium">x{item.quantity}</span>
 					</div>
-
-					<span className="text-[14px] text-gray-400 self-start font-medium">x{data.quantity}</span>
-				</div>
+				))}
 			</div>
 
 			<div className="h-2 bg-gray-100" />

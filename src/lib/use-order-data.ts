@@ -8,13 +8,18 @@ export interface TrackingEvent {
 	date: string
 }
 
-export interface OrderData {
-	storeName: string
+export interface ProductItem {
 	productName: string
 	productFullName: string
 	productVariant: string
 	productPrice: string
 	quantity: number
+	productImage: string
+}
+
+export interface OrderData {
+	storeName: string
+	items: ProductItem[]
 	totalPrice: string
 	orderDate: string
 	deliveryEstimate: string
@@ -23,7 +28,6 @@ export interface OrderData {
 	shippingMethod: string
 	address: string
 	phone: string
-	productImage: string
 	trackingEvents: TrackingEvent[]
 }
 
@@ -31,12 +35,25 @@ const STORAGE_KEY = "aliexpress-order-data"
 
 const defaultData: OrderData = {
 	storeName: "ShenZhen Menglin Electronics Store",
-	productName: "Repetidor wi-fi sem fio, amplificador de re...",
-	productFullName: "Wireless WIFI Repeater Wi Fi Booster Amplifier Network Expander Router Power Antenna for Rou...",
-	productVariant: "EU",
-	productPrice: "5.65",
-	quantity: 12,
-	totalPrice: "113.66",
+	items: [
+		{
+			productName: "Repetidor wi-fi sem fio, amplificador de re...",
+			productFullName: "Wireless WIFI Repeater Wi Fi Booster Amplifier Network Expander Router Power Antenna for Rou...",
+			productVariant: "EU",
+			productPrice: "5.65",
+			quantity: 12,
+			productImage: "/product.jpg",
+		},
+		{
+			productName: "2TB OTG USB Flash Drive USB 3.0 Type C...",
+			productFullName: "2TB OTG USB Flash Drive USB 3.0 Type C For iPhone ipad 1TB 512GB 256G Pendrive Samsung Huawei Xiaomi Android Laptop Memory Stick",
+			productVariant: "2TB / Black",
+			productPrice: "3.20",
+			quantity: 5,
+			productImage: "/pen.png",
+		},
+	],
+	totalPrice: "83.80",
 	orderDate: "2 mar, 2026",
 	deliveryEstimate: "Mar. 16 - Apr. 04",
 	deliveryDate: "4 abr, 2026",
@@ -44,7 +61,6 @@ const defaultData: OrderData = {
 	shippingMethod: "CAINIAO_STANDARD",
 	address: "Palmarejo,Praia,Santiago,Cape Verde 7600",
 	phone: "K********************************a +238 98**533",
-	productImage: "/product.jpg",
 	trackingEvents: [
 		{
 			title: "Desembaraço aduaneiro iniciado",
@@ -78,16 +94,21 @@ export function useOrderData() {
 	const [data, setData] = useState<OrderData | null>(null)
 
 	useEffect(() => {
-		const stored = localStorage.getItem(STORAGE_KEY)
-		if (stored) {
-			try {
-				setData(JSON.parse(stored))
-			} catch {
-				setData(defaultData)
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY)
+			if (stored) {
+				const parsed = JSON.parse(stored)
+				if (Array.isArray(parsed.items) && parsed.items.length > 0 && parsed.trackingEvents) {
+					setData(parsed)
+					return
+				}
 			}
-		} else {
-			setData(defaultData)
+		} catch {
+			// ignore
 		}
+		// Any failure or old format: reset to defaults
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData))
+		setData(defaultData)
 	}, [])
 
 	const save = useCallback((newData: OrderData) => {
@@ -95,5 +116,10 @@ export function useOrderData() {
 		setData(newData)
 	}, [])
 
-	return { data, save }
+	const reset = useCallback(() => {
+		localStorage.removeItem(STORAGE_KEY)
+		setData(defaultData)
+	}, [])
+
+	return { data, save, reset }
 }
