@@ -114,8 +114,12 @@ export default function SettingsPage() {
 				<Section title="Geral">
 					<Field label="Nome da loja" value={data.storeName} onChange={(v) => update("storeName", v)} />
 					<Field label="Preço total (USD)" value={data.totalPrice} onChange={(v) => update("totalPrice", v)} />
+					<Field label="Subtotal (USD)" value={data.subtotal} onChange={(v) => update("subtotal", v)} />
+					<Field label="Frete (USD)" value={data.shipping} onChange={(v) => update("shipping", v)} />
+					<Field label="Desconto cupom (USD)" value={data.couponDiscount} onChange={(v) => update("couponDiscount", v)} />
 					<Field label="Data do pedido" value={data.orderDate} onChange={(v) => update("orderDate", v)} />
 					<Field label="Endereço" value={data.address} onChange={(v) => update("address", v)} />
+					<Field label="Nome do contato" value={data.contactName} onChange={(v) => update("contactName", v)} />
 					<Field label="Telefone" value={data.phone} onChange={(v) => update("phone", v)} />
 				</Section>
 

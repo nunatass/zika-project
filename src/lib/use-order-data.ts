@@ -26,9 +26,13 @@ export interface OrderData {
 	storeName: string
 	items: ProductItem[]
 	totalPrice: string
+	subtotal: string
+	shipping: string
+	couponDiscount: string
 	orderDate: string
 	address: string
 	phone: string
+	contactName: string
 }
 
 const STORAGE_KEY = "aliexpress-order-data"
@@ -72,10 +76,14 @@ const defaultData: OrderData = {
 			],
 		},
 	],
-	totalPrice: "83.80",
+	totalPrice: "110.97",
+	subtotal: "68.04",
+	shipping: "49.93",
+	couponDiscount: "7.00",
 	orderDate: "2 mar, 2026",
-	address: "Palmarejo,Praia,Santiago,Cape Verde 7600",
-	phone: "K********************************a +238 98**533",
+	address: "Palmarejo, Praia, Santiago, Cape Verde 7600",
+	phone: "+238 5981060",
+	contactName: "Ricardo Montrond Rodrigues Silva Roque",
 }
 
 export function useOrderData() {

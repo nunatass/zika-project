@@ -70,59 +70,61 @@ export default function Home() {
 			<div className="flex-1 bg-white overflow-y-auto">
 				{data.items.map((item, i) => (
 					<div key={`order-${i.toString()}`} className="px-4 pt-5 pb-4 border-b-8 border-gray-100">
-						{/* Status Header */}
-						<div className="flex justify-between items-center mb-4">
-							<h2 className="text-[17px] font-bold text-black">Aguardando a entrega</h2>
-							<span className="text-[13px] text-gray-400">{data.orderDate}</span>
-						</div>
-
-						<div className="h-px bg-gray-100 -mx-4 mb-4" />
-
-						{/* Store Name */}
-						<div className="flex items-center mb-4">
-							<h3 className="text-[16px] font-bold text-black">{data.storeName}</h3>
-							<svg className="w-5 h-5 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-								<path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-							</svg>
-						</div>
-
-						{/* Product */}
-						<div className="flex gap-3 mb-5">
-							<img src={item.productImage} alt="Product" className="w-[100px] h-[100px] rounded-lg flex-shrink-0 object-cover bg-gray-50" />
-							<div className="flex-1 min-w-0">
-								<p className="text-[14px] text-gray-700 leading-snug mb-1">{item.productName}</p>
-								<p className="text-[13px] text-gray-400 mb-2">{item.productVariant}</p>
-								<p className="text-[16px] font-bold text-black">US ${item.productPrice}</p>
+						<Link href={`/order/${i}`} className="block">
+							{/* Status Header */}
+							<div className="flex justify-between items-center mb-4">
+								<h2 className="text-[17px] font-bold text-black">Aguardando a entrega</h2>
+								<span className="text-[13px] text-gray-400">{data.orderDate}</span>
 							</div>
-							<span className="text-[14px] text-gray-400 self-end">x{item.quantity}</span>
-						</div>
 
-						{/* Tracking Info Card */}
-						<div className="bg-gray-50 rounded-xl p-4 mb-5">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-3">
-									<svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-										<path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-									</svg>
-									<div>
-										<p className="text-[14px] font-semibold text-black">Ver detalhes do rastreamento</p>
-										<p className="text-[13px] text-gray-400">Data prevista de entrega: {item.deliveryDate}</p>
-									</div>
-								</div>
-								<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+							<div className="h-px bg-gray-100 -mx-4 mb-4" />
+
+							{/* Store Name */}
+							<div className="flex items-center mb-4">
+								<h3 className="text-[16px] font-bold text-black">{data.storeName}</h3>
+								<svg className="w-5 h-5 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
 									<path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
 								</svg>
 							</div>
-						</div>
 
-						<div className="h-px bg-gray-100 -mx-4 mb-4" />
+							{/* Product */}
+							<div className="flex gap-3 mb-5">
+								<img src={item.productImage} alt="Product" className="w-[100px] h-[100px] rounded-lg flex-shrink-0 object-cover bg-gray-50" />
+								<div className="flex-1 min-w-0">
+									<p className="text-[14px] text-gray-700 leading-snug mb-1">{item.productName}</p>
+									<p className="text-[13px] text-gray-400 mb-2">{item.productVariant}</p>
+									<p className="text-[16px] font-bold text-black">US ${item.productPrice}</p>
+								</div>
+								<span className="text-[14px] text-gray-400 self-end">x{item.quantity}</span>
+							</div>
 
-						{/* Total */}
-						<div className="text-right mb-5">
-							<p className="text-[15px] font-bold text-black">
-								Total for {item.quantity} items: US ${(Number.parseFloat(item.productPrice) * item.quantity).toFixed(2)}
-							</p>
-						</div>
+							{/* Tracking Info Card */}
+							<div className="bg-gray-50 rounded-xl p-4 mb-5">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-3">
+										<svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+											<path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+										</svg>
+										<div>
+											<p className="text-[14px] font-semibold text-black">Ver detalhes do rastreamento</p>
+											<p className="text-[13px] text-gray-400">Data prevista de entrega: {item.deliveryDate}</p>
+										</div>
+									</div>
+									<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+										<path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+									</svg>
+								</div>
+							</div>
+
+							<div className="h-px bg-gray-100 -mx-4 mb-4" />
+
+							{/* Total */}
+							<div className="text-right mb-5">
+								<p className="text-[15px] font-bold text-black">
+									Total for {item.quantity} items: US ${(Number.parseFloat(item.productPrice) * item.quantity).toFixed(2)}
+								</p>
+							</div>
+						</Link>
 
 						{/* Action Buttons */}
 						<div className="flex gap-3">
